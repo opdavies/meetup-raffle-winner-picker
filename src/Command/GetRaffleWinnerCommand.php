@@ -97,7 +97,7 @@ final class GetRaffleWinnerCommand extends Command
             '%s - %s',
             $this->eventData['group']['name'],
             $this->eventData['name']
-       ));
+        ));
 
         $io->section(sprintf('%s \'yes\' RSVPs (excluding hosts)', $this->yesRsvps->count()));
         $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
@@ -192,5 +192,4 @@ final class GetRaffleWinnerCommand extends Command
             exec(sprintf('xdg-open %s', $photo));
         }
     }
-
 }

@@ -15,5 +15,4 @@ final class EventCollection extends Collection
             return !Arr::get($rsvp, 'member.event_context.host');
         });
     }
-
 }
