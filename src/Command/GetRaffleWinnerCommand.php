@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Collection\EventCollection;
@@ -14,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class GetRaffleWinnerCommand extends Command
+final class GetRaffleWinnerCommand extends Command
 {
     protected static $defaultName = 'app:get-raffle-winner';
 
@@ -85,7 +87,7 @@ class GetRaffleWinnerCommand extends Command
         OutputInterface $output
     ): int {
         $io = new SymfonyStyle($input, $output);
-        $eventId = $input->getArgument('event_id');
+        $eventId = (int) $input->getArgument('event_id');
 
         $this->retrieveEventData($eventId);
         $this->retrieveRsvps($eventId);
