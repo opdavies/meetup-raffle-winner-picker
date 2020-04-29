@@ -79,8 +79,8 @@ class GetRaffleWinnerCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $this->retrieveRsvps($input);
-        $io->comment(sprintf('%d RSVPs', $this->rsvps->count()));
-        $io->comment(sprintf('%s \'yes\' RSVPs', $this->yesRsvps->count()));
+        $io->section(sprintf('%s \'yes\' RSVPs', $this->yesRsvps->count()));
+        $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
 
         $this->pickWinner();
         $io->success(
