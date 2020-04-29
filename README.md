@@ -1,0 +1,11 @@
+# Meetup.com Raffle Winner Picker
+
+A Symfony console application used by the [PHP South Wales user group](https://www.phpsouthwales.uk) to select raffle prize winners from the attendees for an event.
+
+## Usage
+
+Run the `app:get-raffle-winner` command to retrieve the 'yes' RSVPs from Meetup for an event, and select a winner at random. The only argument is the Meetup event ID, which is required.
+
+    ./bin/console app:get-raffle-winner <event_id>
+
+Currently, all 'yes' RSVPs are possible to be returned, including event hosts.
