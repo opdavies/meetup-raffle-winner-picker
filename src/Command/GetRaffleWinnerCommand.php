@@ -28,6 +28,13 @@ class GetRaffleWinnerCommand extends Command
     private $cache;
 
     /**
+     * The event data.
+     *
+     * @var array
+     */
+    private $eventData = [];
+
+    /**
      * All of the RSVPs for this event.
      *
      * @var \Illuminate\Support\Collection
@@ -77,12 +84,20 @@ class GetRaffleWinnerCommand extends Command
         OutputInterface $output
     ): int {
         $io = new SymfonyStyle($input, $output);
+        $eventId = $input->getArgument('event_id');
 
-        $this->retrieveRsvps($input);
+        $this->retrieveEventData($eventId);
+        $this->retrieveRsvps($eventId);
+        $this->pickWinner();
+
+        $io->title(sprintf(
+            '%s - %s',
+            $this->eventData['group']['name'],
+            $this->eventData['name']
+       ));
+
         $io->section(sprintf('%s \'yes\' RSVPs', $this->yesRsvps->count()));
         $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
-
-        $this->pickWinner();
         $io->success(
             sprintf('Winner: %s', Arr::get($this->winner, 'member.name'))
         );
@@ -90,6 +105,37 @@ class GetRaffleWinnerCommand extends Command
         $this->openWinnerPhoto();
 
         return 0;
+    }
+
+    /**
+     * @param int $eventId
+     *
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    private function retrieveEventData(int $eventId): void
+    {
+        $eventData = $this->cache->getItem(sprintf('event.%d', $eventId));
+
+        if (!$eventData->isHit()) {
+            $response = $this->client->request(
+                'GET',
+                sprintf(
+                    'https://api.meetup.com/%s/events/%d',
+                    'php-south-wales',
+                    $eventId
+                )
+            );
+
+            $eventData->expiresAfter(DateInterval::createFromDateString('1 hour'));
+            $this->eventData = $response->toArray();
+            $this->cache->save($eventData->set($this->eventData));
+        } else {
+            $this->eventData = $eventData->get();
+        }
     }
 
     /**
@@ -101,9 +147,8 @@ class GetRaffleWinnerCommand extends Command
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    private function retrieveRsvps(InputInterface $input): void
+    private function retrieveRsvps(int $eventId): void
     {
-        $eventId = $input->getArgument('event_id');
         $rsvps = $this->cache->getItem(sprintf('rsvps.%d', $eventId));
 
         if (!$rsvps->isHit()) {
