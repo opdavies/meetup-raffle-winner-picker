@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Collection\EventCollection;
 use DateInterval;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -96,7 +97,7 @@ class GetRaffleWinnerCommand extends Command
             $this->eventData['name']
        ));
 
-        $io->section(sprintf('%s \'yes\' RSVPs', $this->yesRsvps->count()));
+        $io->section(sprintf('%s \'yes\' RSVPs (excluding hosts)', $this->yesRsvps->count()));
         $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
         $io->success(
             sprintf('Winner: %s', Arr::get($this->winner, 'member.name'))
@@ -163,8 +164,10 @@ class GetRaffleWinnerCommand extends Command
                 )
             );
 
+            $this->rsvps = EventCollection::make($response->toArray())
+                ->excludeEventHosts();
+
             $rsvps->expiresAfter(DateInterval::createFromDateString('1 hour'));
-            $this->rsvps = new Collection($response->toArray());
             $this->cache->save($rsvps->set($this->rsvps));
         } else {
             $this->rsvps = $rsvps->get();

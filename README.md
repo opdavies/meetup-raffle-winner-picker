@@ -8,4 +8,4 @@ Run the `app:get-raffle-winner` command to retrieve the 'yes' RSVPs from Meetup 
 
     ./bin/console app:get-raffle-winner <event_id>
 
-Currently, all 'yes' RSVPs are possible to be returned, including event hosts.
+RSVPs by event hosts (i.e. organisers) are automatically removed so that they are not returned.
