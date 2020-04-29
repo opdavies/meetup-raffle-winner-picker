@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use DateInterval;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Command\Command;
@@ -9,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GetRaffleWinnerCommand extends Command
@@ -19,6 +21,11 @@ class GetRaffleWinnerCommand extends Command
      * @var \Symfony\Contracts\HttpClient\HttpClientInterface
      */
     private $client;
+
+    /**
+     * @var \Symfony\Contracts\Cache\CacheInterface
+     */
+    private $cache;
 
     /**
      * All of the RSVPs for this event.
@@ -43,11 +50,13 @@ class GetRaffleWinnerCommand extends Command
 
     public function __construct(
         HttpClientInterface $client,
+        CacheInterface $cache,
         string $name = null
     ) {
         parent::__construct($name);
 
         $this->client = $client;
+        $this->cache = $cache;
         $this->rsvps = new Collection();
         $this->yesRsvps = new Collection();
     }
@@ -94,18 +103,27 @@ class GetRaffleWinnerCommand extends Command
      */
     private function retrieveRsvps(InputInterface $input): void
     {
-        $response = $this->client->request(
-            'GET',
-            vsprintf(
-                'https://api.meetup.com/%s/events/%d/rsvps',
-                [
-                    'php-south-wales',
-                    $input->getArgument('event_id'),
-                ]
-            )
-        );
+        $eventId = $input->getArgument('event_id');
+        $rsvps = $this->cache->getItem(sprintf('rsvps.%d', $eventId));
 
-        $this->rsvps = new Collection($response->toArray());
+        if (!$rsvps->isHit()) {
+            $response = $this->client->request(
+                'GET',
+                vsprintf(
+                    'https://api.meetup.com/%s/events/%d/rsvps',
+                    [
+                      'php-south-wales',
+                      $eventId,
+                    ]
+                )
+            );
+
+            $rsvps->expiresAfter(DateInterval::createFromDateString('1 hour'));
+            $this->rsvps = new Collection($response->toArray());
+            $this->cache->save($rsvps->set($this->rsvps));
+        } else {
+            $this->rsvps = $rsvps->get();
+        }
 
         $this->yesRsvps = $this->rsvps->filter(function (array $rsvp): bool {
             return $rsvp['response'] == 'yes';
