@@ -99,6 +99,8 @@ final class GetRaffleWinnerCommand extends Command
             $this->eventData['name']
         ));
 
+        $io->text(rtrim($this->eventData['link'], '/'));
+
         $io->section(sprintf('%s \'yes\' RSVPs (excluding hosts)', $this->yesRsvps->count()));
         $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
         $io->success(
