@@ -26,4 +26,4 @@ jobs:
             --optimize-autoloader
 
       - name: Run PHPCS
-        run: vendor/bin/phpcs -v
+        run: make phpcs
