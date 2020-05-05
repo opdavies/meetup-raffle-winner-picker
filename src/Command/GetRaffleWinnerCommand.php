@@ -85,15 +85,6 @@ final class GetRaffleWinnerCommand extends Command
         return 0;
     }
 
-    /**
-     * @param int $eventId
-     *
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
     private function retrieveEventData(int $eventId): void
     {
         $eventData = $this->cache->getItem(sprintf('event.%d', $eventId));
@@ -116,15 +107,6 @@ final class GetRaffleWinnerCommand extends Command
         }
     }
 
-    /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
     private function retrieveRsvps(int $eventId): void
     {
         $rsvps = $this->cache->getItem(sprintf('rsvps.%d', $eventId));
