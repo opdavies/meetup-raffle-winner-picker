@@ -38,7 +38,6 @@ final class GetRaffleWinnerCommand extends Command
     ) {
         parent::__construct($name);
 
-
         $this->client = $client;
         $this->cache = $cache;
     }
