@@ -20,43 +20,17 @@ final class GetRaffleWinnerCommand extends Command
 {
     protected static $defaultName = 'app:get-raffle-winner';
 
-    /**
-     * @var \Symfony\Contracts\HttpClient\HttpClientInterface
-     */
-    private $client;
+    private HttpClientInterface $client;
 
-    /**
-     * @var \Symfony\Contracts\Cache\CacheInterface
-     */
-    private $cache;
+    private CacheInterface $cache;
 
-    /**
-     * The event data.
-     *
-     * @var array
-     */
-    private $eventData = [];
+    private array $eventData = [];
 
-    /**
-     * All of the RSVPs for this event.
-     *
-     * @var \Illuminate\Support\Collection
-     */
-    private $rsvps;
+    private Collection $rsvps;
 
-    /**
-     * All of the 'yes' RSVPs for this event.
-     *
-     * @var \Illuminate\Support\Collection
-     */
-    private $yesRsvps;
+    private Collection $yesRsvps;
 
-    /**
-     * The picked winner.
-     *
-     * @var null|array
-     */
-    private $winner;
+    private ?array $winner;
 
     public function __construct(
         HttpClientInterface $client,
@@ -65,10 +39,9 @@ final class GetRaffleWinnerCommand extends Command
     ) {
         parent::__construct($name);
 
+
         $this->client = $client;
         $this->cache = $cache;
-        $this->rsvps = new Collection();
-        $this->yesRsvps = new Collection();
     }
 
     protected function configure()
