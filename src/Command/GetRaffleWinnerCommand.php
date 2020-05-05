@@ -6,7 +6,6 @@ namespace App\Command;
 
 use App\Collection\EventCollection;
 use DateInterval;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -77,7 +76,7 @@ final class GetRaffleWinnerCommand extends Command
         $io->section(sprintf('%s \'yes\' RSVPs (excluding hosts)', $this->yesRsvps->count()));
         $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
         $io->success(
-            sprintf('Winner: %s', Arr::get($this->winner, 'member.name'))
+            sprintf('Winner: %s', $this->winner['member']['name'])
         );
 
         $this->openWinnerPhoto();
@@ -144,7 +143,7 @@ final class GetRaffleWinnerCommand extends Command
 
     private function openWinnerPhoto(): void
     {
-        if ($photo = Arr::get($this->winner, 'member.photo.photo_link')) {
+        if ($photo = $this->winner['member']['photo']['photo_link']) {
             exec(sprintf('xdg-open %s', $photo));
         }
     }
