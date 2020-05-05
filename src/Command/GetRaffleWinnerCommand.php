@@ -190,7 +190,6 @@ final class GetRaffleWinnerCommand extends Command
     private function openWinnerPhoto(): void
     {
         if ($photo = Arr::get($this->winner, 'member.photo.photo_link')) {
-            sleep(3);
             exec(sprintf('xdg-open %s', $photo));
         }
     }
