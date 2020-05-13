@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Collection;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
+use Tightenco\Collect\Support\Collection;
 
 final class EventCollection extends Collection
 {
