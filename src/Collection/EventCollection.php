@@ -11,7 +11,7 @@ final class EventCollection extends Collection
     public function excludeEventHosts(): self
     {
         return (new self($this->items))->filter(function (array $rsvp): bool {
-            return $rsvp['member']['event_context']['host'];
+            return !$rsvp['member']['event_context']['host'];
         });
     }
 }

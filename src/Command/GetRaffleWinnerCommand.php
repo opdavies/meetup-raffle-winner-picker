@@ -4,35 +4,28 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Collection\EventCollection;
-use DateInterval;
-use Illuminate\Support\Collection;
+use App\Service\Client\EventClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Tightenco\Collect\Support\Collection;
 
 final class GetRaffleWinnerCommand extends Command
 {
+
     protected static $defaultName = 'app:get-raffle-winner';
 
-    private HttpClientInterface $client;
+    private EventClient $client;
 
     private CacheInterface $cache;
-
-    private array $eventData = [];
-
-    private Collection $rsvps;
-
-    private Collection $yesRsvps;
 
     private ?array $winner;
 
     public function __construct(
-        HttpClientInterface $client,
+        EventClient $client,
         CacheInterface $cache,
         string $name = null
     ) {
@@ -58,22 +51,33 @@ final class GetRaffleWinnerCommand extends Command
         OutputInterface $output
     ): int {
         $io = new SymfonyStyle($input, $output);
-        $eventId = (int) $input->getArgument('event_id');
+        $eventId = (int)$input->getArgument('event_id');
 
-        $this->retrieveEventData($eventId);
-        $this->retrieveRsvps($eventId);
-        $this->pickWinner();
+        // TODO: Re-add caching.
+        $response = $this->client->getEventData($eventId);
+        $rsvps = $response['rsvps'];
 
-        $io->title(sprintf(
-            '%s - %s',
-            $this->eventData['group']['name'],
-            $this->eventData['name']
-        ));
+        $this->pickWinner($rsvps);
 
-        $io->text(rtrim($this->eventData['link'], '/'));
+        $io->title(
+            sprintf(
+                '%s - %s',
+                $response['eventData']['group']['name'],
+                $response['eventData']['name']
+            )
+        );
 
-        $io->section(sprintf('%s \'yes\' RSVPs (excluding hosts)', $this->yesRsvps->count()));
-        $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
+        $io->text(rtrim($response['eventData']['link'], '/'));
+
+        $io->section(
+            sprintf(
+                '%s \'yes\' RSVPs (excluding hosts)',
+                $response['rsvps']->count()
+            )
+        );
+        $io->listing(
+            $response['rsvps']->pluck('member.name')->sort()->toArray()
+        );
         $io->success(
             sprintf('Winner: %s', $this->winner['member']['name'])
         );
@@ -83,61 +87,9 @@ final class GetRaffleWinnerCommand extends Command
         return 0;
     }
 
-    private function retrieveEventData(int $eventId): void
+    private function pickWinner(Collection $rsvps): void
     {
-        $eventData = $this->cache->getItem(sprintf('event.%d', $eventId));
-
-        if (!$eventData->isHit()) {
-            $response = $this->client->request(
-                'GET',
-                sprintf(
-                    'https://api.meetup.com/%s/events/%d',
-                    'php-south-wales',
-                    $eventId
-                )
-            );
-
-            $eventData->expiresAfter(DateInterval::createFromDateString('1 hour'));
-            $this->eventData = $response->toArray();
-            $this->cache->save($eventData->set($this->eventData));
-        } else {
-            $this->eventData = $eventData->get();
-        }
-    }
-
-    private function retrieveRsvps(int $eventId): void
-    {
-        $rsvps = $this->cache->getItem(sprintf('rsvps.%d', $eventId));
-
-        if (!$rsvps->isHit()) {
-            $response = $this->client->request(
-                'GET',
-                vsprintf(
-                    'https://api.meetup.com/%s/events/%d/rsvps',
-                    [
-                      'php-south-wales',
-                      $eventId,
-                    ]
-                )
-            );
-
-            $this->rsvps = EventCollection::make($response->toArray())
-                ->excludeEventHosts();
-
-            $rsvps->expiresAfter(DateInterval::createFromDateString('1 hour'));
-            $this->cache->save($rsvps->set($this->rsvps));
-        } else {
-            $this->rsvps = $rsvps->get();
-        }
-
-        $this->yesRsvps = $this->rsvps->filter(function (array $rsvp): bool {
-            return $rsvp['response'] == 'yes';
-        });
-    }
-
-    private function pickWinner(): void
-    {
-        $this->winner = $this->yesRsvps->random(1)->first();
+        $this->winner = $rsvps->random(1)->first();
     }
 
     private function openWinnerPhoto(): void
