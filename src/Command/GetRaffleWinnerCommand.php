@@ -74,11 +74,11 @@ final class GetRaffleWinnerCommand extends Command
 
         $io->section(sprintf('%s \'yes\' RSVPs (excluding hosts)', $this->yesRsvps->count()));
         $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
-        $io->success(
+        $io->writeln(
             sprintf('Winner: %s', $this->winner['member']['name'])
         );
 
-        $this->openWinnerPhoto();
+        $this->openWinnerPhoto($io);
 
         return 0;
     }
@@ -140,10 +140,10 @@ final class GetRaffleWinnerCommand extends Command
         $this->winner = $this->yesRsvps->random(1)->first();
     }
 
-    private function openWinnerPhoto(): void
+    private function openWinnerPhoto(SymfonyStyle $io): void
     {
-        if ($photo = $this->winner['member']['photo']['photo_link']) {
-            exec(sprintf('xdg-open %s', $photo));
+        if ($photo = $this->winner['member']['photo']['photo_link'] ?? NULL) {
+            $io->write($photo);
         }
     }
 }
