@@ -21,6 +21,11 @@ final class Winner
         return $this->name;
     }
 
+    public function getPhoto(): ?string
+    {
+        return $this->photo ?? null;
+    }
+
     protected function __construct(array $data)
     {
         [
@@ -30,10 +35,5 @@ final class Winner
 
         $this->name = $name;
         $this->photo = $photo['photo_link'];
-    }
-
-    public function getPhoto(): ?string
-    {
-        return $this->photo ?? null;
     }
 }

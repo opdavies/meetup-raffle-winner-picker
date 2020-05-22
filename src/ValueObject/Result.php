@@ -9,11 +9,11 @@ use Tightenco\Collect\Support\Collection;
 
 final class Result
 {
-    private Winner $winner;
+    private Collection $rsvps;
 
     private Event $event;
 
-    private Collection $rsvps;
+    private Winner $winner;
 
     public function __construct(
         Winner $winner,
@@ -25,11 +25,6 @@ final class Result
         $this->rsvps = $rsvps;
     }
 
-    public function getWinner(): Winner
-    {
-        return $this->winner;
-    }
-
     public function getEvent(): Event
     {
         return $this->event;
@@ -38,5 +33,10 @@ final class Result
     public function getRsvps(): RsvpCollection
     {
         return $this->rsvps;
+    }
+
+    public function getWinner(): Winner
+    {
+        return $this->winner;
     }
 }
