@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Collection\EventCollection;
+use App\Collection\RsvpCollection;
+use App\UseCase\FindTheWinner;
+use App\ValueObject\Winner;
 use DateInterval;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Command\Command;
@@ -17,6 +19,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class GetRaffleWinnerCommand extends Command
 {
+
     protected static $defaultName = 'app:get-raffle-winner';
 
     private HttpClientInterface $client;
@@ -58,91 +61,39 @@ final class GetRaffleWinnerCommand extends Command
         OutputInterface $output
     ): int {
         $io = new SymfonyStyle($input, $output);
-        $eventId = (int) $input->getArgument('event_id');
+        $eventId = (int)$input->getArgument('event_id');
 
-        $this->retrieveEventData($eventId);
-        $this->retrieveRsvps($eventId);
-        $this->pickWinner();
+        $result = (new FindTheWinner(
+            $this->client,
+            $this->cache,
+            $eventId
+        ))->__invoke();
 
-        $io->title(sprintf(
-            '%s - %s',
-            $this->eventData['group']['name'],
-            $this->eventData['name']
-        ));
+        $event = $result->getEvent();
+        $io->title($event->getName());
+        $io->text($event->getLink());
 
-        $io->text(rtrim($this->eventData['link'], '/'));
-
-        $io->section(sprintf('%s \'yes\' RSVPs (excluding hosts)', $this->yesRsvps->count()));
-        $io->listing($this->yesRsvps->pluck('member.name')->sort()->toArray());
-        $io->writeln(
-            sprintf('Winner: %s', $this->winner['member']['name'])
+        $io->section(
+            sprintf(
+                '%s \'yes\' RSVPs (excluding hosts)',
+                $result->getRsvps()->count()
+            )
         );
 
-        $this->openWinnerPhoto($io);
+        $io->listing($result->getRsvps()->getNames()->toArray());
+
+        $io->writeln(
+            sprintf('Winner: %s', $result->getWinner()->getName())
+        );
+
+        $this->openWinnerPhoto($result->getWinner(), $io);
 
         return 0;
     }
 
-    private function retrieveEventData(int $eventId): void
+    private function openWinnerPhoto(Winner $winner, SymfonyStyle $io): void
     {
-        $eventData = $this->cache->getItem(sprintf('event.%d', $eventId));
-
-        if (!$eventData->isHit()) {
-            $response = $this->client->request(
-                'GET',
-                sprintf(
-                    'https://api.meetup.com/%s/events/%d',
-                    'php-south-wales',
-                    $eventId
-                )
-            );
-
-            $eventData->expiresAfter(DateInterval::createFromDateString('1 hour'));
-            $this->eventData = $response->toArray();
-            $this->cache->save($eventData->set($this->eventData));
-        } else {
-            $this->eventData = $eventData->get();
-        }
-    }
-
-    private function retrieveRsvps(int $eventId): void
-    {
-        $rsvps = $this->cache->getItem(sprintf('rsvps.%d', $eventId));
-
-        if (!$rsvps->isHit()) {
-            $response = $this->client->request(
-                'GET',
-                vsprintf(
-                    'https://api.meetup.com/%s/events/%d/rsvps',
-                    [
-                      'php-south-wales',
-                      $eventId,
-                    ]
-                )
-            );
-
-            $this->rsvps = EventCollection::make($response->toArray())
-                ->excludeEventHosts();
-
-            $rsvps->expiresAfter(DateInterval::createFromDateString('1 hour'));
-            $this->cache->save($rsvps->set($this->rsvps));
-        } else {
-            $this->rsvps = $rsvps->get();
-        }
-
-        $this->yesRsvps = $this->rsvps->filter(function (array $rsvp): bool {
-            return $rsvp['response'] == 'yes';
-        });
-    }
-
-    private function pickWinner(): void
-    {
-        $this->winner = $this->yesRsvps->random(1)->first();
-    }
-
-    private function openWinnerPhoto(SymfonyStyle $io): void
-    {
-        if ($photo = $this->winner['member']['photo']['photo_link'] ?? NULL) {
+        if ($photo = $winner->getPhoto()) {
             $io->write($photo);
         }
     }
