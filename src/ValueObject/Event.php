@@ -11,7 +11,7 @@ class Event
 
     private string $link;
 
-    public static function createFromArray(array $data)
+    public static function createFromArray(array $data): self
     {
         return new static($data);
     }
