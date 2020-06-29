@@ -20,7 +20,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class GetRaffleWinnerCommand extends Command
 {
 
-    protected static $defaultName = 'app:get-raffle-winner';
+    protected static $defaultName = 'meetup:pick-winner';
 
     private HttpClientInterface $client;
 
