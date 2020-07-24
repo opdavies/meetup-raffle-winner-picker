@@ -1,0 +1,31 @@
+command('composer %'):
+  env:
+    COMMAND: = input.argument('%')
+  exec: |
+    #!bash|@
+    passthru "docker run --rm -v $(pwd):@('app.path') -w @('app.path') composer $COMMAND"
+
+command('console %'):
+  env:
+    COMMAND: = input.argument('%')
+  exec: |
+    #!bash|@
+    passthru "docker run --rm -it -v $(pwd):@('app.path') -w @('app.path') php:@('php.version')-cli bash -c 'bin/console $COMMAND'"
+
+command('install'): |
+  #!bash
+  passthru "ws composer install"
+
+command('test phpcs'): |
+  #!bash|@
+  passthru "docker run --rm -v $(pwd):@('app.path') -w @('app.path') php:@('php.version')-cli vendor/bin/phpcs"
+
+command('pick <event_id>'): |
+  #!bash|=
+  passthru "ws console meetup:pick-winner ={ input.argument('event_id') }"
+
+attributes:
+  app:
+    path: /app
+  php:
+    version: 7.4
