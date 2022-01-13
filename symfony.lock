@@ -8,6 +8,15 @@
     "doctrine/instantiator": {
         "version": "1.4.0"
     },
+    "illuminate/collections": {
+        "version": "v8.79.0"
+    },
+    "illuminate/contracts": {
+        "version": "v8.79.0"
+    },
+    "illuminate/macroable": {
+        "version": "v8.79.0"
+    },
     "myclabs/deep-copy": {
         "version": "1.10.2"
     },
@@ -75,6 +84,9 @@
     },
     "psr/log": {
         "version": "1.1.3"
+    },
+    "psr/simple-cache": {
+        "version": "1.0.1"
     },
     "sebastian/cli-parser": {
         "version": "1.0.1"
