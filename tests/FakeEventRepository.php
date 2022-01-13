@@ -11,10 +11,10 @@ use Tightenco\Collect\Support\Collection;
 final class FakeEventRepository implements EventRepository
 {
     private static array $rsvps = [
-        ['name' => 'matthew s.', 'response' => RsvpResponse::RESPONSE_YES],
-        ['name' => 'Michael P.', 'response' => RsvpResponse::RESPONSE_YES],
-        ['name' => 'Kathryn "Kat" R.', 'response' => RsvpResponse::RESPONSE_YES],
-        ['name' => 'Did not attend', 'response' => RsvpResponse::RESPONSE_NO],
+        ['name' => 'matthew s.', 'response' => RsvpResponse::RESPONSE_YES, 'member' => ['event_context' => ['host' => false]]],
+        ['name' => 'Michael P.', 'response' => RsvpResponse::RESPONSE_YES, 'member' => ['event_context' => ['host' => false]]],
+        ['name' => 'Kathryn "Kat" R.', 'response' => RsvpResponse::RESPONSE_YES, 'member' => ['event_context' => ['host' => false]]],
+        ['name' => 'Did not attend', 'response' => RsvpResponse::RESPONSE_NO, 'member' => ['event_context' => ['host' => false]]],
     ];
 
     public function getConfirmedAttendees(): Collection {
