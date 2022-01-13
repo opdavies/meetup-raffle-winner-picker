@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class FakeEventRepositoryTest extends KernelTestCase
 {
+    use EventRepositoryContractTest;
+
     private EventRepository $repository;
 
     public function setUp(): void
@@ -14,21 +16,5 @@ final class FakeEventRepositoryTest extends KernelTestCase
         self::bootKernel();
 
         $this->repository = static::$container->get(EventRepository::class);
-    }
-
-    /** @test */
-    public function should_only_return_attendees_with_a_yes_rsvp(): void
-    {
-        $attendees = $this->repository->getConfirmedAttendees();
-
-        $this->assertCount(3, $attendees);
-    }
-
-    /** @test */
-    public function should_not_return_event_organisers(): void
-    {
-        $attendees = $this->repository->getConfirmedAttendees();
-
-        $this->assertCount(3, $attendees);
     }
 }
