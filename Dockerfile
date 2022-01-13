@@ -6,7 +6,8 @@ ENV PATH="${PATH}:/app/vendor/bin"
 
 WORKDIR /app
 
-RUN adduser --disabled-password app \
+RUN apk add --no-cache bash \
+  && adduser --disabled-password app \
   && chown app:app -R /app
 
 USER app

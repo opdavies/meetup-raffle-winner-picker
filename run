@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Based on https://github.com/adriancooney/Taskfile and
+# https://nickjanetakis.com/blog/replacing-make-with-a-shell-script-for-running-your-projects-tasks.
+
+DOCKER_TAG=meetup-raffle-winner-picker
+
+function build {
+  # Build the Docker image.
+  docker image build . --tag ${DOCKER_TAG}
+}
+
+function help {
+  printf "%s <task> [args]\n\nTasks:\n" "${0}"
+
+  compgen -A function | grep -v "^_" | cat -n
+
+  printf "\nExtended help:\n  Each task has comments for general usage\n"
+}
+
+function test {
+  # Run PHPUnit tests.
+  docker container run --rm -it \
+    -v $(pwd):/app \
+    --entrypoint phpunit \
+    ${DOCKER_TAG} "${@}"
+}
+
+eval "${@:-help}"
