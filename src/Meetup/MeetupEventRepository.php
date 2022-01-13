@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Meetup;
 
+use App\EventRepository;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Tightenco\Collect\Support\Collection;
 

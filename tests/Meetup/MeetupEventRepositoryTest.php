@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Meetup;
 
 use App\EventRepository;
+use App\Tests\EventRepositoryContractTest;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
