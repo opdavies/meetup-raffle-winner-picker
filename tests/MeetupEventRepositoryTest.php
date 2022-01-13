@@ -5,7 +5,10 @@ namespace App\Tests;
 use App\EventRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-final class FakeEventRepositoryTest extends KernelTestCase
+/**
+ * @group api
+ */
+final class MeetupEventRepositoryTest extends KernelTestCase
 {
     use EventRepositoryContractTest;
 
@@ -15,10 +18,6 @@ final class FakeEventRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $container = static::$container;
-
-        $container->set(EventRepository::class, new FakeEventRepository());
-
-        $this->repository = static::$container->get(EventRepository::class);
+        $this->repository = self::$container->get(EventRepository::class);
     }
 }

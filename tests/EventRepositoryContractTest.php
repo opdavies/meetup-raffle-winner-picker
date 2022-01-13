@@ -21,6 +21,6 @@ trait EventRepositoryContractTest
     {
         $attendees = $this->repository->getConfirmedAttendees();
 
-        $this->assertFalse($attendees->pluck('is_host')->contains(true));
+        $this->assertSame([false], $attendees->pluck('is_host')->unique()->toArray());
     }
 }
