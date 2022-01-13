@@ -22,6 +22,7 @@ final class FakeEventRepository implements EventRepository
         return Collection::make(self::$rsvps)
             ->filter(fn (array $attendee): bool => $attendee['response']
                 == RsvpResponse::RESPONSE_YES)
+            ->filter(fn (array $attendee): bool => !$attendee['member']['event_context']['host'])
             ;
     }
 }
