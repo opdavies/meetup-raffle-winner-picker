@@ -11,6 +11,7 @@ use Tightenco\Collect\Support\Collection;
 final class FakeEventRepository implements EventRepository
 {
     private static array $rsvps = [
+        ['name' => 'Oliver Davies.', 'response' => RsvpResponse::RESPONSE_YES, 'member' => ['event_context' => ['host' => true]]],
         ['name' => 'matthew s.', 'response' => RsvpResponse::RESPONSE_YES, 'member' => ['event_context' => ['host' => false]]],
         ['name' => 'Michael P.', 'response' => RsvpResponse::RESPONSE_YES, 'member' => ['event_context' => ['host' => false]]],
         ['name' => 'Kathryn "Kat" R.', 'response' => RsvpResponse::RESPONSE_YES, 'member' => ['event_context' => ['host' => false]]],
