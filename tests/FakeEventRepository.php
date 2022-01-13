@@ -14,6 +14,7 @@ final class FakeEventRepository implements EventRepository
             ['name' => 'matthew s.', 'response' => 'yes'],
             ['name' => 'Michael P.', 'response' => 'yes'],
             ['name' => 'Kathryn "Kat" R.', 'response' => 'yes'],
+            ['name' => 'Did not attend', 'response' => 'no'],
         ]);
     }
 }
