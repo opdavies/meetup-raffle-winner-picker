@@ -21,6 +21,6 @@ final class FakeEventRepositoryTest extends KernelTestCase
 
         $attendees = $this->repository->getConfirmedAttendees();
 
-        $this->assertCount(3, $attendees->pluck('name'));
+        $this->assertCount(3, $attendees);
     }
 }
