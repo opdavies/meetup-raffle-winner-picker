@@ -10,6 +10,11 @@ function build {
   docker image build . --tag ${DOCKER_TAG}
 }
 
+function ci:test {
+  build
+  test "${@}"
+}
+
 function help {
   printf "%s <task> [args]\n\nTasks:\n" "${0}"
 
@@ -20,7 +25,7 @@ function help {
 
 function test {
   # Run PHPUnit tests.
-  docker container run --rm -it \
+  docker container run --rm -t \
     -v $(pwd):/app \
     --entrypoint phpunit \
     ${DOCKER_TAG} "${@}"
