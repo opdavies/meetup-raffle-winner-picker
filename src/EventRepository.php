@@ -2,7 +2,9 @@
 
 namespace App;
 
+use Tightenco\Collect\Support\Collection;
+
 interface EventRepository
 {
-    public function getConfirmedAttendees(): array;
+    public function getConfirmedAttendees(): Collection;
 }
