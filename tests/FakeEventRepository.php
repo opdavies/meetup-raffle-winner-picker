@@ -18,7 +18,8 @@ final class FakeEventRepository implements EventRepository
         ['name' => 'Did not attend', 'response' => RsvpResponse::RESPONSE_NO, 'is_host' => false],
     ];
 
-    public function getConfirmedAttendees(): Collection {
+    public function getConfirmedAttendees(): Collection
+    {
         return Collection::make(self::$rsvps)
             ->filter(fn (array $attendee): bool => $attendee['response']
                 == RsvpResponse::RESPONSE_YES)
