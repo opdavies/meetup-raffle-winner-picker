@@ -11,9 +11,9 @@ final class FakeEventRepository implements EventRepository
 {
     public function getConfirmedAttendees(): Collection {
         return Collection::make([
-            ['name' => 'matthew s.'],
-            ['name' => 'Michael P.'],
-            ['name' => 'Kathryn "Kat" R.'],
+            ['name' => 'matthew s.', 'response' => 'yes'],
+            ['name' => 'Michael P.', 'response' => 'yes'],
+            ['name' => 'Kathryn "Kat" R.', 'response' => 'yes'],
         ]);
     }
 }
