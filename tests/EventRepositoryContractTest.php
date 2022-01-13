@@ -13,7 +13,7 @@ trait EventRepositoryContractTest
     {
         $attendees = $this->repository->getConfirmedAttendees();
 
-        $this->assertCount(3, $attendees);
+        $this->assertFalse($attendees->pluck('is_attending')->contains(false));
     }
 
     /** @test */
@@ -21,6 +21,6 @@ trait EventRepositoryContractTest
     {
         $attendees = $this->repository->getConfirmedAttendees();
 
-        $this->assertCount(3, $attendees);
+        $this->assertFalse($attendees->pluck('is_host')->contains(true));
     }
 }
