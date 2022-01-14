@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\EventRepository;
+use Tightenco\Collect\Support\Collection;
 
 trait EventRepositoryContractTest
 {
@@ -13,7 +14,7 @@ trait EventRepositoryContractTest
     {
         $attendees = $this->repository->findAttendeesForEvent();
 
-        $this->assertFalse($attendees->pluck('is_attending')->contains(false));
+        $this->assertOnlyAttendingAttendeesAreReturned($attendees);
     }
 
     /** @test */
@@ -21,6 +22,16 @@ trait EventRepositoryContractTest
     {
         $attendees = $this->repository->findAttendeesForEvent();
 
+        $this->assertEventHostsAreNotReturned($attendees);
+    }
+
+    private function assertEventHostsAreNotReturned(Collection $attendees): void
+    {
         $this->assertSame([false], $attendees->pluck('is_host')->unique()->toArray());
+    }
+
+    private function assertOnlyAttendingAttendeesAreReturned(Collection $attendees): void
+    {
+        $this->assertFalse($attendees->pluck('is_attending')->contains(false));
     }
 }
