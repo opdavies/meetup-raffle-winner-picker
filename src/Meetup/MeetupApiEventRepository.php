@@ -6,7 +6,7 @@ use App\EventRepository;
 use Illuminate\Support\Collection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class MeetupEventRepository implements EventRepository
+final class MeetupApiEventRepository implements EventRepository
 {
     private HttpClientInterface $client;
 

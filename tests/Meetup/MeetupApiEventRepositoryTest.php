@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 /**
  * @group api
  */
-final class MeetupEventRepositoryTest extends KernelTestCase
+final class MeetupApiEventRepositoryTest extends KernelTestCase
 {
     use EventRepositoryContractTest;
 
