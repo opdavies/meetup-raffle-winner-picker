@@ -16,7 +16,7 @@ final class MeetupEventRepository implements EventRepository
         $this->client = $client;
     }
 
-    public function getConfirmedAttendees(): Collection
+    public function findAttendeesForEvent(): Collection
     {
         $response = $this->client->request('GET', 'https://api.meetup.com/php-south-wales/events/282265786/rsvps');
 

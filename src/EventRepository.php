@@ -6,5 +6,5 @@ use Tightenco\Collect\Support\Collection;
 
 interface EventRepository
 {
-    public function getConfirmedAttendees(): Collection;
+    public function findAttendeesForEvent(): Collection;
 }
