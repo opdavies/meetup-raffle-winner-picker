@@ -23,7 +23,7 @@ final class MeetupEventRepository implements EventRepository
         $rsvps = json_decode($response->getContent());
 
         return Collection::make($rsvps)
-            ->filter(fn (\stdClass $rsvp): bool => $rsvp->response == 'yes')
+            ->filter(fn (\stdClass $rsvp): bool => $rsvp->response == RsvpResponse::RESPONSE_YES)
             ->filter(fn (\stdClass $attendee): bool => !$attendee->member->event_context->host)
             ->map(function (\stdClass $attendee): \stdClass {
                 $attendee->is_attending = true;
