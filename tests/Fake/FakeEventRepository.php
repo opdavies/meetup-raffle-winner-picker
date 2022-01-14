@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Fake;
 
 use App\EventRepository;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 final class FakeEventRepository implements EventRepository
 {

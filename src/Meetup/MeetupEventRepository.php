@@ -3,8 +3,8 @@
 namespace App\Meetup;
 
 use App\EventRepository;
+use Illuminate\Support\Collection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Tightenco\Collect\Support\Collection;
 
 final class MeetupEventRepository implements EventRepository
 {

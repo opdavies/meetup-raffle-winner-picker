@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 interface EventRepository
 {

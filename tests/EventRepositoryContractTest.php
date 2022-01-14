@@ -3,7 +3,7 @@
 namespace App\Tests;
 
 use App\EventRepository;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 trait EventRepositoryContractTest
 {
