@@ -13,6 +13,8 @@ final class MeetupApiEventRepositoryTest extends KernelTestCase
 {
     use EventRepositoryContractTest;
 
+    public static int $eventId = 282265786;
+
     private EventRepository $repository;
 
     public function setUp(): void

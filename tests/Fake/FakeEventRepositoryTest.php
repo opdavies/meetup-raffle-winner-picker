@@ -10,6 +10,8 @@ final class FakeEventRepositoryTest extends KernelTestCase
 {
     use EventRepositoryContractTest;
 
+    public static int $eventId = 123;
+
     private EventRepository $repository;
 
     public function setUp(): void

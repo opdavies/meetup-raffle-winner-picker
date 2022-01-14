@@ -6,5 +6,5 @@ use Illuminate\Support\Collection;
 
 interface EventRepository
 {
-    public function findAttendeesForEvent(): Collection;
+    public function findAttendeesForEvent(int $eventId): Collection;
 }

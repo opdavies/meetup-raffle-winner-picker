@@ -16,9 +16,11 @@ final class MeetupApiEventRepository implements EventRepository
         $this->client = $client;
     }
 
-    public function findAttendeesForEvent(): Collection
+    public function findAttendeesForEvent(int $eventId): Collection
     {
-        $response = $this->client->request('GET', 'https://api.meetup.com/php-south-wales/events/282265786/rsvps');
+        $apiUrl = sprintf('https://api.meetup.com/%s/events/%d/rsvps', 'php-south-wales', $eventId);
+
+        $response = $this->client->request('GET', $apiUrl);
 
         $rsvps = json_decode($response->getContent());
 

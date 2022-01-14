@@ -22,7 +22,7 @@ final class FakeEventRepository implements EventRepository
         ];
     }
 
-    public function findAttendeesForEvent(): Collection
+    public function findAttendeesForEvent(int $eventId): Collection
     {
         return Collection::make(self::$rsvps)
             ->filter(fn (\stdClass $attendee): bool => $attendee->is_attending)

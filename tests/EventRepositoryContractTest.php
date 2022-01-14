@@ -12,7 +12,7 @@ trait EventRepositoryContractTest
     /** @test */
     public function should_only_return_attendees_with_a_yes_rsvp(): void
     {
-        $attendees = $this->repository->findAttendeesForEvent();
+        $attendees = $this->repository->findAttendeesForEvent(self::$eventId);
 
         $this->assertOnlyAttendingAttendeesAreReturned($attendees);
     }
@@ -20,7 +20,7 @@ trait EventRepositoryContractTest
     /** @test */
     public function should_not_return_event_organisers(): void
     {
-        $attendees = $this->repository->findAttendeesForEvent();
+        $attendees = $this->repository->findAttendeesForEvent(static::$eventId);
 
         $this->assertEventHostsAreNotReturned($attendees);
     }
