@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests;
+namespace App\Tests\Fake;
 
 use App\EventRepository;
 use Tightenco\Collect\Support\Collection;

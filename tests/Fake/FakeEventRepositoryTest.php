@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Fake;
 
 use App\EventRepository;
+use App\Tests\EventRepositoryContractTest;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class FakeEventRepositoryTest extends KernelTestCase
