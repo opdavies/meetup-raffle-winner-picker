@@ -15,6 +15,14 @@ function ci:test {
   test "${@}"
 }
 
+function composer {
+  # Run Composer commands.
+  docker container run --rm -it \
+    -v $(pwd):/app \
+    --entrypoint composer \
+    ${DOCKER_TAG} "${@}"
+}
+
 function help {
   printf "%s <task> [args]\n\nTasks:\n" "${0}"
 
