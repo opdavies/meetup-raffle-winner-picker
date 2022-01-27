@@ -4,45 +4,26 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Collection\RsvpCollection;
-use App\UseCase\FindTheWinner;
-use App\ValueObject\Winner;
-use DateInterval;
-use Illuminate\Support\Collection;
+use App\EventRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class GetRaffleWinnerCommand extends Command
 {
-
     protected static $defaultName = 'meetup:pick-winner';
 
-    private HttpClientInterface $client;
-
-    private CacheInterface $cache;
-
-    private array $eventData = [];
-
-    private Collection $rsvps;
-
-    private Collection $yesRsvps;
-
-    private ?array $winner;
+    private EventRepository $eventRepository;
 
     public function __construct(
-        HttpClientInterface $client,
-        CacheInterface $cache,
+        EventRepository $eventRepository,
         string $name = null
     ) {
         parent::__construct($name);
 
-        $this->client = $client;
-        $this->cache = $cache;
+        $this->eventRepository = $eventRepository;
     }
 
     protected function configure()
@@ -63,38 +44,20 @@ final class GetRaffleWinnerCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $eventId = (int)$input->getArgument('event_id');
 
-        $result = (new FindTheWinner(
-            $this->client,
-            $this->cache,
-            $eventId
-        ))->__invoke();
+        $attendees = $this->eventRepository->findAttendeesForEvent($eventId);
 
-        $event = $result->getEvent();
-        $io->title($event->getName());
-        $io->text($event->getLink());
+        $winner = $attendees->random();
 
-        $io->section(
-            sprintf(
-                '%s \'yes\' RSVPs (excluding hosts)',
-                $result->getRsvps()->count()
-            )
-        );
+        $io->title('Meetup Raffle Winner Picker');
 
-        $io->listing($result->getRsvps()->getNames()->toArray());
+        $io->text(sprintf('"Yes" RSVPs (%d):', $attendees->count()));
+        $io->newLine();
 
-        $io->writeln(
-            sprintf('Winner: %s', $result->getWinner()->getName())
-        );
+        // TODO: this is meetup specific, so needs to be made agnostic.
+        $io->listing($attendees->map->member->map->name->toArray());
 
-        $this->openWinnerPhoto($result->getWinner(), $io);
+        $io->success($winner->member->name);
 
         return 0;
-    }
-
-    private function openWinnerPhoto(Winner $winner, SymfonyStyle $io): void
-    {
-        if ($photo = $winner->getPhoto()) {
-            $io->write($photo);
-        }
     }
 }
