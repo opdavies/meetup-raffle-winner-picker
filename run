@@ -47,9 +47,14 @@ function task:help {
 function task:test {
   # Run PHPUnit tests.
   if [[ $APP_BUILD == "dynamic" ]]; then
-    docker container run --rm -t -v $PWD:/app --entrypoint phpunit ${DOCKER_TAG} "${@}"
+    docker container run --rm -t \
+      -v $PWD:/app \
+      --entrypoint phpunit \
+      ${DOCKER_TAG} "${@}"
   elif [[ $APP_BUILD == "static" ]]; then
-    docker container run --rm -t --entrypoint phpunit ${DOCKER_TAG} "${@}"
+    docker container run --rm -t \
+      --entrypoint phpunit \
+      ${DOCKER_TAG} "${@}"
   fi
 }
 
