@@ -8,20 +8,20 @@ set -e
 APP_BUILD="${APP_BUILD:=dynamic}"
 DOCKER_TAG=meetup-raffle-winner-picker
 
-function build {
+function task:build {
   # Build the Docker image.
   docker image build . --tag ${DOCKER_TAG}
 }
 
-function ci:test {
+function task:ci:test {
   # Run continuous integration (CI) checks.
   APP_BUILD=static
 
-  build
-  test --testdox "${@}"
+  task:build
+  task:test --testdox "${@}"
 }
 
-function composer {
+function task:composer {
   # Run Composer commands.
   docker container run --rm -it \
     -v $(pwd):/app \
@@ -29,22 +29,22 @@ function composer {
     ${DOCKER_TAG} "${@}"
 }
 
-function console {
+function task:console {
   docker container run --rm -t  \
     --entrypoint php \
     ${DOCKER_TAG} \
     bin/console ${@}
 }
 
-function help {
+function task:help {
   printf "%s <task> [args]\n\nTasks:\n" "${0}"
 
-  compgen -A function | grep -v "^_" | cat -n
+  compgen -A function | sed -En 's/task:(.*)/\1/p' | cat -n
 
   printf "\nExtended help:\n  Each task has comments for general usage\n"
 }
 
-function test {
+function task:test {
   # Run PHPUnit tests.
   if [[ $APP_BUILD == "dynamic" ]]; then
     docker container run --rm -t -v $PWD:/app --entrypoint phpunit ${DOCKER_TAG} "${@}"
@@ -53,4 +53,4 @@ function test {
   fi
 }
 
-eval "${@:-help}"
+eval "task:${@:-help}"
