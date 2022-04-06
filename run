@@ -29,6 +29,13 @@ function composer {
     ${DOCKER_TAG} "${@}"
 }
 
+function console {
+  docker container run --rm -t  \
+    --entrypoint php \
+    ${DOCKER_TAG} \
+    bin/console ${@}
+}
+
 function help {
   printf "%s <task> [args]\n\nTasks:\n" "${0}"
 
