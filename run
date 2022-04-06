@@ -3,6 +3,9 @@
 # Based on https://github.com/adriancooney/Taskfile and
 # https://nickjanetakis.com/blog/replacing-make-with-a-shell-script-for-running-your-projects-tasks.
 
+set -e
+
+APP_BUILD="${APP_BUILD:=dynamic}"
 DOCKER_TAG=meetup-raffle-winner-picker
 
 function build {
@@ -11,6 +14,9 @@ function build {
 }
 
 function ci:test {
+  # Run continuous integration (CI) checks.
+  APP_BUILD=static
+
   build
   test "${@}"
 }
@@ -33,10 +39,11 @@ function help {
 
 function test {
   # Run PHPUnit tests.
-  docker container run --rm -t \
-    -v $(pwd):/app \
-    --entrypoint phpunit \
-    ${DOCKER_TAG} "${@}"
+  if [[ $APP_BUILD == "dynamic" ]]; then
+    docker container run --rm -t -v $PWD:/app --entrypoint phpunit ${DOCKER_TAG} "${@}"
+  elif [[ $APP_BUILD == "static" ]]; then
+    docker container run --rm -t --entrypoint phpunit ${DOCKER_TAG} "${@}"
+  fi
 }
 
 eval "${@:-help}"
