@@ -1,4 +1,4 @@
-FROM php:7.4-cli-alpine
+FROM ghcr.io/oliverdaviesltd/php:7.4-cli
 
 COPY --from=composer:1 /usr/bin/composer /usr/bin/composer
 
@@ -6,9 +6,12 @@ ENV PATH="${PATH}:/app/vendor/bin"
 
 WORKDIR /app
 
-RUN apk add --no-cache bash \
-  && adduser --disabled-password app \
-  && chown app:app -R /app
+RUN apt-get update -yqq \
+   && apt-get install -yqq \
+    git \
+    unzip \
+   && adduser --disabled-password app \
+   && chown app:app -R /app
 
 USER app
 
@@ -22,4 +25,4 @@ RUN composer install
 
 COPY --chown=app:app . .
 
-ENTRYPOINT ["sh"]
+ENTRYPOINT ["bash"]
